@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html ng-app="codex">
+
+<head>
+	<title>CODEX v0.1 - COLDBLUE</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="./css/codex.css" type="text/css">
+    <script type="text/javascript" src="./js/angular.js"></script>
+    <script src="./js/angular-ui.js" data-semver="0.4.0" data-require="angular-ui@*"></script>
+    <script type="text/javascript" src="./js/angular-modules.js"></script>
+    <script type="text/javascript" src="./js/jquery.js"></script>
+
+</head>
+
+<body ng-controller="codexList">
+	<div id="toolbar">
+        <div id="toolbar-center">
+    		<div id="div-logo">
+    			<img src="./img/logo.png" id="img-logo">
+    		</div>
+    		<input type="text" id="search" class="flat" placeholder="Search..." ng-model="search.$">
+    		<div name="refresh" id="refresh" class="flat icon" ng-click="list()"><img src="./img/refresh.png" class="icon"></div>
+    		<div id="div-add" ng-click="addhide()">
+    			Add
+    		</div>
+        </div>
+	</div>
+	<div id="table-wrapper">
+        
+        <table id="thelist">
+            <tr class="">
+                <th class="table-header col-1 col"></th>
+                <th class="table-header col-2 col">IP Address</th>
+                <th class="table-header col-3 col">Nickname</th>
+                <th class="table-header col-4 col">DNS Name</th>
+                <th class="table-header col-5 col">Type</th>
+                <th class="table-header col-6 col">Reserved</th>
+                <th class="table-header col-7 col"></th>
+                <th class="table-header col-8 col"></th>
+            </tr>
+            <tr ng-hide="row.length" class="tablehover tr-list" ng-repeat="row in entries | orderBy: ['ipA','ipB','ipC','ipD'] | filter:search">
+                <td class="table-item col-1 col"><img ng-src="./img/{{row.health}}" class="status-color"></td>
+                <td class="table-item col-2 col text-ip">{{ row.ipaddr }}</td>
+                <td class="table-item col-3 col">{{ row.nickname }}</td>
+                <td class="table-item col-4 col text-dns">{{ row.dnsname }}</td>
+                <td class="table-item col-5 col text-type">{{ row.type }}</td>
+                <td class="table-item col-6 col"><center><img ng-src="./img/{{row.reserved}}" class="status-reserved"></center></td>
+                <td class="table-item col-7 col"><div id="editBtn" class="flat icon" name="editBtn" ng-model="editBtn" type="button" ng-click="edit(row)"><img src="./img/edit.png" class="inline-icon edit"></button></div>
+                <td class="table-item col-8 col"><div id="deleteBtn" class="flat icon" name="deleteBtn" value="./img/delete.png" ng-click="delete(row)"><img src="./img/cancel.png" class="inline-icon delete"></div></td>
+                <!-- these are for sorting purposes only -->
+                <td class="hidden">{{ row.subnet }}</td>
+                <td class="hidden">{{ row.location }}</td>
+                <td class="hidden">{{ row.vlan }}</td>
+                <td class="hidden">{{ row.notes }}</td>
+                <td class="hidden">{{ row.ipA }}.{{row.ipB}}.{{row.ipC}}.{{row.ipD}}</td>
+            </tr>
+            
+        </table>
+    </div>
+
+    <!-- OVERLAY WINDOWS -->
+
+  <div id="add-window" ng-class="{'add-show': !addopen, 'add-hide': addopen }">
+        <div id="add-wrapper">
+            <h1>Add Codex entry</h1><img id="add-cancel" ng-click="addcancel()" src="./img/cancel.png">
+                <table id="add-tbl">
+                    <tr >
+                        <td class="add-td add-col-l">IP Address</td><td class="add-td add-col-r"><input name="ipaddr" ng-model="ipaddr" type="text" class="flat add-box" placeholder="ex. 127.0.0.1"></td>
+                    </tr>
+                    <tr >
+                        <td></td><td><input type="checkbox" ng-model="reserved" class="flat" id="addreserved" ng-true-value="reserved.png" ng-false-value="clear.png" ><div class="addcheckbox-text">Reserved</div></td>
+                    </tr>
+                    <tr >
+                        <td class="add-td add-col-l">Nickname</td><td class="add-td add-col-r"><input name="nickname" ng-model="nickname" type="text" class="flat add-box" placeholder="ex. Web Server 1"></td>
+                    </tr>
+                    <tr >
+                        <td class="add-td add-col-l">Device Type</td><td class="add-td add-col-r"><select name="type" ng-model="type" class="flat add-box" id="typedropdown">
+                                            <option value="Access Point">Access Point</option>
+                                            <option value="Firewall (Device)">Firewall - Device</option>
+                                            <option value="Firewall (Software)">Firewall - Software</option>
+                                            <option value="Firewall/Router">Firewall/Router</option>
+                                            <option value="Gateway">Gateway</option>
+                                            <option value="Router (Device)">Router - Device</option>
+                                            <option value="Router (Software)">Router - Software</option>
+                                            <option value="Router (WiFi)">Router - WiFi</option>
+                                            <option value="Security (Camera)">Security - Camera</option>
+                                            <option value="Security (DVR)">Security - DVR</option>
+                                            <option value="Security (Other)">Security - Other</option>
+                                            <option value="Server">Server</option>
+                                            <option value="Server (VM)">Server - VM</option>
+                                            <option value="Server (VM Host)">Server - VM Host</option>
+                                            <option value="Service (Public)">Service - Public</option>
+                                            <option value="Service (Private)">Service - Private</option>
+                                            <option value="Switch (Managed)">Switch - Managed</option>
+                                            <option value="Switch (Unmanaged)">Switch - Unmanaged</option>
+                                            <option value="Workstation">Workstation</option>
+                                            <option value="Workstation (VM)">Workstation - VM</option>
+                                            <option value="Other">Other</option>
+                                            </select></td>
+                    </tr>
+                    <tr >
+                        <td class="add-td add-col-l">Subnet (CIDR)</td><td class="add-td add-col-r"><input name="subnet" ng-model="subnet" type="text" class="flat add-box" placeholder="ex. 192.168.1.0/24"></td>
+                    </tr>
+                    <tr >
+                        <td class="add-td add-col-l">VLAN</td><td class="add-td add-col-r"><input name="vlan" ng-model="vlan" type="text" class="flat add-box" placeholder="ex. 10"></td>
+                    </tr>
+                    <tr >
+                        <td class="add-td add-col-l">Location</td><td class="add-td add-col-r"><input name="location" ng-model="location" type="text" class="flat add-box" placeholder="ex. Server Room #2"></td>
+                    </tr>
+                    <tr >
+                        <td class="add-td add-col-l notes-label">Notes</td><td class="add-td add-col-r"><textarea id="notes" name="notes" ng-model="notes" class="flat add-box" placeholder="...">" "</textarea></td>
+                    </tr>
+                </table>
+                <input type="button" class="flat" id="add-button" ng-click="add()" value="Add">
+        </div>
+    </div> 
+
+<!-- EDIT WINDOW -->
+
+    <div id="edit-popup" ng-class="{'edit-show' : !hide, 'edit-hide': hide }">
+        <div id="edit-wrapper">
+            <h1>Edit Codex entry</h1><img id="add-cancel" ng-click="edithide()" src="./img/cancel.png">
+            <table id="edit-table">
+                <tr >
+                    <td class="add-td add-col-l">IP Address</td><td class="add-td add-col-r"><input name="editipaddr" ng-model="editIpaddr" type="text" class="flat add-box" value="{{$scope.$edit.ipaddr}}"></td>
+                </tr>
+                <tr >
+                    <td></td><td><input type="checkbox" ng-model="editReserved" class="flat" id="editReserved" ng-true-value="reserved.png" ng-false-value="clear.png"><div class="addcheckbox-text" >Reserved</div></td>
+                </tr>
+                <tr >
+                    <td class="add-td add-col-l">Nickname</td><td class="add-td add-col-r"><input name="editnickname" ng-model="editNickname" type="text" class="flat add-box" value="{{$edit.nickname}}"></td>
+                </tr>
+                <tr>
+                    <td class="add-td add-col-l">DNS Name</td><td class="add-td add-col-r"><input name="editDnsname" ng-model="editDnsname" type="text" class="flat add-box" value="{{$edit.dnsname}}" readonly></td>
+                </tr>
+                <tr >
+                    <td class="add-td add-col-l">Device Type</td><td class="add-td add-col-r"><select name="editType" ng-model="editType" class="flat add-box" id="typedropdown" value="{{$edit.type}}">
+                                        <option value="Access Point">Access Point</option>
+                                        <option value="Firewall (Device)">Firewall - Device</option>
+                                        <option value="Firewall (Software)">Firewall - Software</option>
+                                        <option value="Firewall/Router">Firewall/Router</option>
+                                        <option value="Gateway">Gateway</option>
+                                        <option value="Router (Device)">Router - Device</option>
+                                        <option value="Router (Software)">Router - Software</option>
+                                        <option value="Router (WiFi)">Router - WiFi</option>
+                                        <option value="Security (Camera)">Security - Camera</option>
+                                        <option value="Security (DVR)">Security - DVR</option>
+                                        <option value="Security (Other)">Security - Other</option>
+                                        <option value="Server">Server</option>
+                                        <option value="Server (VM)">Server - VM</option>
+                                        <option value="Server (VM Host)">Server - VM Host</option>
+                                        <option value="Service (Public)">Service - Public</option>
+                                        <option value="Service (Private)">Service - Private</option>
+                                        <option value="Switch (Managed)">Switch - Managed</option>
+                                        <option value="Switch (Unmanaged)">Switch - Unmanaged</option>
+                                        <option value="Workstation">Workstation</option>
+                                        <option value="Workstation (VM)">Workstation - VM</option>
+                                        <option value="Other">Other</option>
+                                        </select></td>
+                </tr>
+                <tr >
+                    <td class="add-td add-col-l">Subnet (CIDR)</td><td class="add-td add-col-r"><input name="editSubnet" ng-model="editSubnet" type="text" class="flat add-box" value="{{$edit.subnet}}"></td>
+                </tr>
+                <tr >
+                    <td class="add-td add-col-l">VLAN</td><td class="add-td add-col-r"><input name="editVlan" ng-model="editVlan" type="text" class="flat add-box" value="{{$edit.vlan}}"></td>
+                </tr>
+                <tr >
+                    <td class="add-td add-col-l">Location</td><td class="add-td add-col-r"><input name="editLocation" ng-model="editLocation" type="text" class="flat add-box" value="{{$edit.location}}"></td>
+                </tr>
+                <tr >
+                    <td class="add-td add-col-l notes-label">Notes</td><td class="add-td add-col-r"><textarea id="notes" name="editNotes" ng-model="editNotes" class="flat add-box" value="{{ $edit.notes }}"></textarea></td>
+                </tr>
+            </table>
+            <input type="button" class="flat" id="edit-save-button" ng-click="saveEdit()" value="Save">
+            <input type="button" class="flat" id="edit-close-button" ng-click="edithide()" value="Close">
+        </div>
+    </div>    
+
+</body>
