@@ -21,10 +21,37 @@ app.config(['$httpProvider', function($httpProvider) {
 app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', function($scope, $timeout, $http, $templateCache) {
 
     var method = 'POST';
-    var rooturl = 'http://10.10.10.132:666';
+    var rooturl = 'http://192.168.1.9:666';
     var oip = '';
 
     $scope.codeStatus = "";
+
+    // === logging function === //
+    
+    $scope.logger = function (code, message) {
+
+        var err = {
+            errcode: code,
+            errmsg: message
+        };
+        var jdata = "mydata=" + JSON.stringify(err);
+        $http({
+            method: 'POST',
+            url: rooturl+'/angularlog',
+            data: jdata,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            cache: $templateCache,
+        }).
+        success(function(response) {
+            $scope.nothing();
+        }).
+        error(function(response){
+            $scope.codeStatus = response || "Request failed";
+            console.log('101 -- HTTP error - fn. logger');
+        });
+
+
+    };
 
     // list hosts
     $scope.list = function() {
@@ -36,6 +63,29 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
     };
      
     $scope.nothing = function() {
+
+    };
+
+    $scope.triggerlog = function() {
+        var logdata = {
+            errcode: '666',
+            errmsg: 'logtest'
+        };
+        var jdata = "mydata=" + JSON.stringify(logdata);
+        $http({
+            method: 'POST',
+            url: rooturl+'/angularlog',
+            data: jdata,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            cache: $templateCache,
+        }).
+        success(function(response) {
+            $scope.logger('100','HTTP success');
+        }).
+        error(function(response){
+            $scope.codeStatus = response || "Request failed";
+            $scope.logger('101','HTTP error');
+        });
 
     };
 
@@ -85,6 +135,12 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
         return $scope.addopen;
     };
 
+    $scope.adminhide = function () {
+
+        $scope.adminopen = ($scope.adminopen) ? false : true;
+        return $scope.adminopen;
+    };
+
     $scope.addcancel = function () {
 
         $scope.ipaddr = '';
@@ -113,7 +169,6 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
 
     $scope.saveEdit = function () {
 
-       console.log("saving to DB");
        // split IP into octets for sorting
         var octets = ($scope.editIpaddr).split(".");
         $scope.ipA = octets[0];
@@ -127,7 +182,7 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
         var formData = {
             ipaddr: $scope.editIpaddr,
             oip: oip,
-            dnsname: $scope.editDnsname,
+            //dnsname: $scope.editDnsname,
             type: $scope.editType,
             nickname: $scope.editNickname,
             subnet: $scope.editSubnet,
@@ -144,8 +199,6 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
 
         var jdata = 'mydata=' + JSON.stringify(formData);
 
-        console.log(formData);
-
         $http({
             method: 'POST',
             url: rooturl+'/save',
@@ -154,14 +207,11 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
             cache: $templateCache,
         }).
         success(function(response) {
-            console.log("success");
-            $scope.codeStatus = response.data;
-            console.log($scope.codeStatus);
+            $scope.logger('100','HTTP success');
         }).
         error(function(response){
-            console.log("error");
             $scope.codeStatus = response || "Request failed";
-            console.log($scope.codeStatus);
+            $scope.logger('101','HTTP error - fn. saveEdit');
         });
 
         $scope.edithide();
@@ -171,8 +221,6 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
 
     $scope.refresh = function () {
         $scope.list();
-        console.log('refreshed the page');
-
     };
 
     $scope.delete = function(row) {
@@ -193,14 +241,11 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
             cache: $templateCache
         }).
         success(function(response) {
-            console.log("success");
-            $scope.codeStatus = response.data;
-            console.log($scope.codeStatus);
+            $scope.logger('100','HTTP success');
         }).
         error(function(response){
-            console.log("error");
             $scope.codeStatus = response || "Request failed";
-            console.log($scope.codeStatus);
+            $scope.logger('101','HTTP error - fn. delete');
         });
         $scope.list();
         return false;
@@ -216,11 +261,10 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
 
         // split IP into octets for sorting
         var octets = ($scope.ipaddr).split(".");
-        $scope.ipA = octets[0];
-        $scope.ipB = octets[1];
-        $scope.ipC = octets[2];
-        $scope.ipD = octets[3];
-        console.log($scope.ipA, $scope.ipB, $scope.ipC, $scope.ipD);
+        $scope.ipA = parseFloat(octets[0]);
+        $scope.ipB = parseFloat(octets[1]);
+        $scope.ipC = parseFloat(octets[2]);
+        $scope.ipD = parseFloat(octets[3]);
 
         /// check to see if fields are null & fix 
         if ($scope.nickname == null) {
@@ -249,8 +293,6 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
         $scope.notes = notes.replace('\n',' ');
 
         var iplookup = 'mydata='+JSON.stringify(ipData);
-        
-        console.log(iplookup);
 
         $http({
             method: 'POST',
@@ -261,7 +303,6 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
         }).
         then( function(res) {
 
-            console.log(res.data);
             if (res.data[0].response==="1") {
 
                 alert("IP address exists!\nPlease choose another.");
@@ -272,7 +313,6 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
 
             else {
 
-                console.log("ip doesn't exist, do write to db function");
                 var formData = {
                     ipaddr: $scope.ipaddr,
                     nickname: $scope.nickname,
@@ -299,14 +339,11 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
                     cache: $templateCache,
                 }).
                 success(function(response) {
-                    console.log("success");
-                    $scope.codeStatus = response.data;
-                    console.log($scope.codeStatus);
+                    $scope.logger('100','HTTP success');
                 }).
                 error(function(response){
-                    console.log("error");
                     $scope.codeStatus = response || "Request failed";
-                    console.log($scope.codeStatus);
+                    $scope.logger('101','HTTP error - fn. add');
                 });
 
                 $scope.ipaddr = '';
@@ -329,6 +366,94 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
 
     };
 
+    $scope.rescanAll = function () {
+        $http({
+            method: 'POST',
+            url: rooturl+'/rescanall',
+            data: "crawl db",
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            cache: $templateCache,
+        }).
+        success(function(response) {
+            $scope.logger('100','HTTP success');
+        }).
+        error(function(response){
+            $scope.codeStatus = response || "Request failed";
+            $scope.logger('101','HTTP error - fn. rescanAll');
+        });
+    };
+
+    $scope.rescanOne = function (row) {
+
+        var ipdata = { ipaddr: row.ipaddr }; 
+        var jdata = "mydata=" + JSON.stringify(ipdata);
+
+        $http({
+            method: 'POST',
+            url: rooturl+'/rescanone',
+            data: jdata,
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            cache: $templateCache,
+        }).
+        success(function(response) {
+            $scope.logger('100','HTTP success');
+        }).
+        error(function(response){
+            $scope.codeStatus = response || "Request failed";
+            $scope.logger('101','HTTP error - fn. rescanOne');
+        });
+        $timeout(function() {$scope.list()}, 1001);
+    };
+
+    $scope.drop = function () {
+        $http({
+            method: 'POST',
+            url: rooturl+'/drop',
+            data: "drop",
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            cache: $templateCache,
+        }).
+        success(function(response) {
+            $scope.logger('100','HTTP success');
+        }).
+        error(function(response){
+            $scope.codeStatus = response || "Request failed";
+            $scope.logger('101','HTTP error - fn. drop');
+        });
+        $timeout(function() {$scope.list()}, 1001);
+        $scope.adminhide();
+    };
+
+    $scope.scanSubnet = function () {
+
+        $http({
+            method: 'POST',
+            url: rooturl+'/scan',
+            data: "scan",
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            cache: $templateCache,
+        }).
+        success(function(response) {
+            console.log(response);
+            $scope.logger('100','HTTP success');
+        }).
+        error(function(response){
+            $scope.codeStatus = response || "Request failed";
+            console.log(response);
+            $scope.logger('101','HTTP error - fn. scanSubnet');
+        });
+        $scope.adminhide();
+    };
+
+    // Thanks to Josep on StackOverflow for this brilliant workaround!
+    $scope.ipOrder = function(row){
+    return (
+            (parseInt(row.ipA)*Math.pow(256,3))+
+            (parseInt(row.ipB)*Math.pow(256,2))+
+            (parseInt(row.ipC)*256)+
+            parseInt(row.ipD));
+    };
+
 app.filter('unique', function() {
     return function(input, key) {
         var unique = {};
@@ -345,9 +470,8 @@ app.filter('unique', function() {
 
 });
 
-app.filter('newline', function(text) {
-    return text.replace('<RET>','<br>');
-});
+
+
 
 
 // ============= ON LOAD FUNCTION CALLS ======//

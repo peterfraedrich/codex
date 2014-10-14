@@ -10,6 +10,8 @@
 // ================ SETUP ========================== // 
 
     var connect = require('connect');
+    var sys = require('sys');
+    var exec = require('child_process').exec;
     var fs = require ('fs');
     var dns = require('dns');
     var application_root = __dirname,
@@ -27,8 +29,10 @@
    
     var allowCrossDomain = function(req, res, next) {
       res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-      res.header('Access-Control-Allow-Headers', 'X-Requested-With, Accept, Origin, Referer, User-Agent, Content-Type, Authorization');
+      //res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+      res.header('Access-Control-Allow-Methods', '*');
+      res.header('Access-Control-Allow-Headers', '*');
+      //res.header('Access-Control-Allow-Headers', 'X-Requested-With, Accept, Origin, Referer, User-Agent, Content-Type, Authorization');
      
       // intercept OPTIONS method
       if (req.method === 'OPTIONS') {
@@ -48,42 +52,72 @@
     if (fs.statSync('./log/node_server.log')["size"] < 2) {
       fs.writeFile('./log/node_server.log', "");
     };
+     if (fs.statSync('./log/angularjs.log')["size"] < 2) {
+      fs.writeFile('./log/angularjs.log', "");
+    };
 
 // ================ INTERNAL FUNCTIONS ===============//
 
-// gets date and time for log function
-function GetDateTime() {
+  // gets date and time for log function
+  function GetDateTime() {
 
-    var date = new Date();
-    var hour = date.getHours();
-    hour = (hour < 10 ? "0" : "") + hour;
-    var min = date.getMinutes();
-    min = (min < 10 ? "0" : "") + min;
-    var sec = date.getSeconds();
-    sec = (sec < 10 ? "0" : "") + sec;
-    var year = date.getFullYear();
-    var month = date.getMonth();
-    month = (month < 10 ? "0" : "") + month;
-    var day = date.getDate();
-    day = (day < 10 ? "0" : "") + day;
-    return year + ":" + month + ":" + day + "::" + hour + ":" + min + "." + sec + " -- ";
-}
+      var date = new Date();
+      var hour = date.getHours();
+      hour = (hour < 10 ? "0" : "") + hour;
+      var min = date.getMinutes();
+      min = (min < 10 ? "0" : "") + min;
+      var sec = date.getSeconds();
+      sec = (sec < 10 ? "0" : "") + sec;
+      var year = date.getFullYear();
+      var month = date.getMonth();
+      month = (month < 10 ? "0" : "") + month;
+      var day = date.getDate();
+      day = (day < 10 ? "0" : "") + day;
+      return year + ":" + month + ":" + day + "::" + hour + ":" + min + "." + sec + " -- ";
+  }
 
-// log function
-function log(code, message) {
-    timestamp = GetDateTime();
-    message = timestamp + code +  " -- " + message + "\n";
-    filename = './log/node_server.log';
-    currentlog = fs.readFileSync(filename,'utf-8');
-    oldlog = fs.statSync(filename)
-    if (oldlog["size"] > 5000000.0) { // moves log to .old if its over 5mb and clears current log
-        fs.writeFile('./log/node_server.log.old', currentlog);
-        fs.writeFile(filename, GetDateTime()+ " -- 000 -- Cleaned up the logfile.");
-    };
-    fs.appendFile(filename, message, function (err) {
-      if (err) return console.log("could not write to logfile" + err);
+  // NODE log function
+  function log(code, message) {
+      timestamp = GetDateTime();
+      message = timestamp + code +  " -- " + message + "\n";
+      filename = './log/node_server.log';
+      currentlog = fs.readFileSync(filename,'utf-8');
+      oldlog = fs.statSync(filename)
+      if (oldlog["size"] > 5000000.0) { // moves log to .old if its over 5mb and clears current log
+          fs.writeFile('./log/node_server.log.old', currentlog);
+          fs.writeFile(filename, GetDateTime()+ " -- 000 -- Cleaned up the logfile.");
+      };
+      fs.appendFile(filename, message, function (err) {
+        if (err) return console.log("could not write to logfile" + err);
+      });
+  };
+
+  // ANGULAR log function
+  function ngLog(code, message) {
+      timestamp = GetDateTime();
+      message = timestamp + code +  " -- " + message + "\n";
+      filename = './log/angularjs.log';
+      currentlog = fs.readFileSync(filename,'utf-8');
+      oldlog = fs.statSync(filename)
+      if (oldlog["size"] > 5000000.0) { // moves log to .old if its over 5mb and clears current log
+          fs.writeFile('./log/angularjs.log.old', currentlog);
+          fs.writeFile(filename, GetDateTime()+ " -- 000 -- Cleaned up the logfile.");
+      };
+      fs.appendFile(filename, message, function (err) {
+        if (err) return console.log("could not write to logfile" + err);
+      });
+  };
+
+
+// ================ ANGULAR LOGGING ================ //
+
+    app.post('/angularlog', function (req, res) {
+
+      var jsonData = JSON.parse(req.body.mydata);
+      ngLog(jsonData.errcode,jsonData.errmsg);
+      res.send('1');
+
     });
-};
 
 
 // ================ API ============================ //
@@ -217,16 +251,8 @@ function log(code, message) {
 //// SAVE CHANGED HOST
     app.post('/save', function (req, res){
            var jsonData = JSON.parse(req.body.mydata);
-           try {
-            dns.reverse(ip, function (err, resolve) {
-              dnsresolve = resolve[0].toString();
-              }); 
-            } catch (err) {
-              dnsresolve = "";
-              log("301", "There was a DNS error on the lookup");
-            };
            var query = jsonData.oip;
-           db.entries.update({ipaddr:query}, {$set : {dnsname: dnsresolve, nickname: jsonData.nickname, ipaddr: jsonData.ipaddr, subnet: jsonData.subnet, vlan: jsonData.vlan, type: jsonData.type, location: jsonData.location, notes: jsonData.notes, reserved: jsonData.reserved, ipA: jsonData.ipA, ipB: jsonData.ipB, ipC: jsonData.ipC, ipD: jsonData.ipD} },
+           db.entries.update({ipaddr:query}, {$set : {nickname: jsonData.nickname, ipaddr: jsonData.ipaddr, subnet: jsonData.subnet, vlan: jsonData.vlan, type: jsonData.type, location: jsonData.location, notes: jsonData.notes, reserved: jsonData.reserved, ipA: jsonData.ipA, ipB: jsonData.ipB, ipC: jsonData.ipC, ipD: jsonData.ipD} },
                 function(err, saved) {
                   if( err || !saved ) { 
                     res.end( "server not saved"); 
@@ -285,6 +311,65 @@ function log(code, message) {
         catch(err) {
           log("502","There was an error fecthing from the DB at " + databaseUrl + " or an error with the POST.");
         }
+    });
+
+///////////////////// PYTHON API HOOKS ////////////////////////////
+
+//// RESCAN DB
+    app.post('/rescanall', function (req, res) {
+      var child = exec('python ./scripts/scanall.py -node', function(error) {
+        if (error != null) {
+          log('601','node_server could not execute python script.');
+          res.send("0");
+        } else {
+          console.log('Running python script');
+          res.send("1");
+        };
+      });
+    });
+
+//// RESCAN ONE
+    app.post('/rescanone', function (req, res){
+      var jsonData = JSON.parse(req.body.mydata);
+      var cmd = 'python ./scripts/scanone.py -node ' + jsonData.ipaddr;
+      var child = exec(cmd, function(error) {
+        if (error != null) {
+          log('701','node_server could not execute the python script.');
+          res.send("0");
+        } else {
+          console.log('Running python script.');
+          res.send("1");
+        };
+      });
+    });
+
+//// SCAN SUBNET
+    app.post('/scan', function (req, res){
+      var jsonData = JSON.parse(req.body.mydata);
+      var cmd = 'python ./scripts/scansubnet.py -node ' + jsonData.ipaddr;
+      var child = exec(cmd, function(error) {
+        if (error != null) {
+          log('801','node_server could not execute the python script.');
+          res.send("0");
+        } else {
+          console.log('Running python script.');
+          res.send("1");
+        };
+      });
+    });
+
+//// DELETE ALL
+    app.post('/drop', function (req, res){
+      var cmd = 'python ./scripts/dropdb.py -node';
+      var child = exec(cmd, function(error) {
+        if (error != null) {
+          log('901','node_server could not execute the python script.');
+          res.send("0");
+        } else {
+          log('999','The entries database was dropped. Hope you have backups.');
+          res.send("1");
+        };
+      });
     });
 
 // ============= LISTEN ==================== //

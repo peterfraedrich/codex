@@ -20,10 +20,13 @@
     			<img src="./img/logo.png" id="img-logo">
     		</div>
     		<input type="text" id="search" class="flat" placeholder="Search..." ng-model="search.$">
-    		<div name="refresh" id="refresh" class="flat icon" ng-click="list()"><img src="./img/refresh.png" class="icon"></div>
-    		<div id="div-add" ng-click="addhide()">
+    		<div name="refresh" id="refresh" class="flat icon" ng-click="list()" title="Refesh entries"><img src="./img/refresh.png" class="icon"></div>
+    		<div id="div-add" ng-click="addhide()" title="Add new entry">
     			Add
     		</div>
+            <div id="div-admin" >
+                <img src="./img/gear.png" id="adminicon" class="icon flat" ng-click="adminhide()" title="Admin panel">
+            </div>
         </div>
 	</div>
 	<div id="table-wrapper">
@@ -37,25 +40,25 @@
                 <th class="table-header col-5 col">Type</th>
                 <th class="table-header col-6 col">Reserved</th>
                 <th class="table-header col-7 col"></th>
+                <th class="table-header col-7 col"></th>
                 <th class="table-header col-8 col"></th>
             </tr>
-            <tr ng-hide="row.length" class="tablehover tr-list" ng-repeat="row in entries | orderBy: ['ipA','ipB','ipC','ipD'] | filter:search">
-                <td class="table-item col-1 col"><img ng-src="./img/{{row.health}}" class="status-color"></td>
+            <tr ng-hide="row.length" class="tablehover tr-list" ng-repeat="row in entries | filter:search | orderBy:ipOrder">
+                <td class="table-item col-1 col"><img ng-src="./img/{{row.health}}" class="status-color" title="Entry status. Green = UP, Red = Down"></td>
                 <td class="table-item col-2 col text-ip">{{ row.ipaddr }}</td>
                 <td class="table-item col-3 col">{{ row.nickname }}</td>
                 <td class="table-item col-4 col text-dns">{{ row.dnsname }}</td>
                 <td class="table-item col-5 col text-type">{{ row.type }}</td>
-                <td class="table-item col-6 col"><center><img ng-src="./img/{{row.reserved}}" class="status-reserved"></center></td>
-                <td class="table-item col-7 col"><div id="editBtn" class="flat icon" name="editBtn" ng-model="editBtn" type="button" ng-click="edit(row)"><img src="./img/edit.png" class="inline-icon edit"></button></div>
-                <td class="table-item col-8 col"><div id="deleteBtn" class="flat icon" name="deleteBtn" value="./img/delete.png" ng-click="delete(row)"><img src="./img/cancel.png" class="inline-icon delete"></div></td>
+                <td class="table-item col-6 col"><center><img ng-src="./img/{{row.reserved}}" class="status-reserved" title="Reservation status. '!' denotes reserved."></center></td>
+                <td class="table-item col-7 col"><div id="rescanBtn" class="flat icon" name="scanBtn" ng-model="scanBtn" type="button" ng-click="rescanOne(row)" title="Re-scan entry."><img src="./img/refresh.png" class="inline-icon rescan"></button></div></td>
+                <td class="table-item col-7 col"><div id="editBtn" class="flat icon" name="editBtn" ng-model="editBtn" type="button" ng-click="edit(row)" title="Edit entry."><img src="./img/edit.png" class="inline-icon edit"></button></div></td>
+                <td class="table-item col-8 col"><div id="deleteBtn" class="flat icon" name="deleteBtn" value="./img/delete.png" ng-click="delete(row)" title="Delete entry."><img src="./img/cancel.png" class="inline-icon delete"></div></td>
                 <!-- these are for sorting purposes only -->
                 <td class="hidden">{{ row.subnet }}</td>
                 <td class="hidden">{{ row.location }}</td>
                 <td class="hidden">{{ row.vlan }}</td>
                 <td class="hidden">{{ row.notes }}</td>
-                <td class="hidden">{{ row.ipA }}.{{row.ipB}}.{{row.ipC}}.{{row.ipD}}</td>
-            </tr>
-            
+            </tr>                           
         </table>
     </div>
 
@@ -175,6 +178,31 @@
             <input type="button" class="flat" id="edit-save-button" ng-click="saveEdit()" value="Save">
             <input type="button" class="flat" id="edit-close-button" ng-click="edithide()" value="Close">
         </div>
-    </div>    
+    </div>  
+
+<!-- ADMIN WINDOW -->
+
+    <div id="admin-popup" ng-class="{'admin-show' : adminopen, 'admin-hide': !adminopen }"> 
+        <div id="admin-wrapper">
+            <h1>Background Operations</h1><img id="admin-cancel" ng-click="adminhide()" src="./img/cancel.png">
+            <table id="admin-table">
+                <tr>
+                    <td class="admin-header">Re-Scan</td>
+                    <td class="desc">Uses ICMP to determine if an entry is responding and is "up".</td>
+                    <td class="td-button"><input type="button" class="flat launchbtn" value="Launch" ng-click="rescanAll()"></td>
+                </tr>
+                <tr>
+                    <td class="admin-header">Scan Subnet</td>
+                    <td class="desc">Uses ICMP to scan a subnet in search of new entries, resolves new entries in DNS, and adds them to the database.</td>
+                    <td class="td-button"><input type="button" class="flat launchbtn" value="Launch" ng-click="scanSubnet()"></td>
+                </tr>
+                <tr>
+                    <td class="admin-header">Delete All Entries</td>
+                    <td class="desc">Deletes all entries.<br><b>THIS CANNOT BE UNDONE</b></td>
+                    <td class="td-button"><input type="button" class="flat launchbtn" value="Delete All" ng-click="drop()"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
 
 </body>
