@@ -46,11 +46,17 @@ if [ $CODEX == "y" ]; then
 	curl -sL https://rpm.nodesource.com/setup | bash - #> /dev/null 2>&1
 	yum groupinstall 'Development Tools' #> /dev/null 2>&1
 	echo "Installing NPM modules"
+	cd ~
+	git clone git://github.com/isaacs/npm.git
+	cd npm
+	make install
+	cd /codex
 	npm install #> /dev/null 2>&1
 	echo "Setting security settings"
 	service iptables stop #> /dev/null 2>&1
 	service ip6tables stop #> /dev/null 2>&1
 	chkconfig iptables off #> /dev/null 2>&1
 	chkconfig ip6tables off #> /dev/null 2>&1
+fi
 
 echo "Finished up. Exiting."
