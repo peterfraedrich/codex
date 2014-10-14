@@ -47,5 +47,10 @@ if [ $CODEX == "y" ]; then
 	yum groupinstall 'Development Tools' #> /dev/null 2>&1
 	echo "Installing NPM modules"
 	npm install #> /dev/null 2>&1
+	echo "Setting security settings"
+	service iptables stop #> /dev/null 2>&1
+	service ip6tables stop #> /dev/null 2>&1
+	chkconfig iptables off #> /dev/null 2>&1
+	chkconfig ip6tables off #> /dev/null 2>&1
 
 echo "Finished up. Exiting."
