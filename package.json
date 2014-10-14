@@ -16,9 +16,7 @@
     "mongodb": "*",
     "errorhandler": "~1.0.0",
     "connect": "~1.0.0",
-    "mongojs": "*",
-    "python-shell": "*",
-    "dns":"*"
+    "mongojs": "*"
   }
 }
 
