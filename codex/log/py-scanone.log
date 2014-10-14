@@ -1,0 +1,57 @@
+10:12:2014::20:45.32 -- INFO -- Starting ping to 192.168.1.99
+10:12:2014::20:45.35 -- INFO -- Finished checking 192.168.1.99
+10:12:2014::20:45.52 -- INFO -- Starting ping to 192.168.1.99
+10:12:2014::20:45.53 -- INFO -- Finished checking 192.168.1.99
+10:12:2014::20:48.14 -- INFO -- Starting ping to 192.168.1.99
+10:12:2014::20:48.15 -- INFO -- Finished checking 192.168.1.99
+10:12:2014::20:48.39 -- INFO -- Starting ping to 192.168.1.99
+10:12:2014::20:48.40 -- INFO -- Finished checking 192.168.1.99
+10:12:2014::21:15.44 -- INFO -- Starting ping to 192.168.1.9
+10:12:2014::21:15.44 -- INFO -- Finished checking 192.168.1.9
+10:12:2014::21:18.06 -- INFO -- Starting ping to 192.168.1.9
+10:12:2014::21:18.06 -- INFO -- Finished checking 192.168.1.9
+10:12:2014::21:19.11 -- INFO -- Starting ping to 192.168.1.9
+10:12:2014::21:19.11 -- INFO -- Finished checking 192.168.1.9
+10:12:2014::21:19.18 -- INFO -- Starting ping to 192.168.1.99
+10:12:2014::21:19.19 -- INFO -- Finished checking 192.168.1.99
+10:12:2014::21:36.14 -- INFO -- Starting ping to 10.10.10.10
+10:12:2014::21:36.15 -- INFO -- Finished checking 10.10.10.10
+10:12:2014::21:39.31 -- INFO -- Starting ping to 10.10.10.10
+10:12:2014::21:39.32 -- INFO -- Finished checking 10.10.10.10
+10:12:2014::21:39.46 -- INFO -- Starting ping to 100.100.100.100
+10:12:2014::21:39.47 -- INFO -- Finished checking 100.100.100.100
+10:12:2014::21:59.18 -- INFO -- Starting ping to 2.2.2.2
+10:12:2014::21:59.19 -- INFO -- Finished checking 2.2.2.2
+10:12:2014::21:59.44 -- INFO -- Starting ping to 9.9.9.9
+10:12:2014::21:59.45 -- INFO -- Finished checking 9.9.9.9
+10:12:2014::22:00.28 -- INFO -- Starting ping to 1.1.13.1
+10:12:2014::22:00.29 -- INFO -- Finished checking 1.1.13.1
+10:12:2014::22:00.39 -- INFO -- Starting ping to 1.1.13.1
+10:12:2014::22:00.40 -- INFO -- Finished checking 1.1.13.1
+10:12:2014::22:10.51 -- INFO -- Starting ping to 192.168.1.9
+10:12:2014::22:10.51 -- INFO -- Finished checking 192.168.1.9
+10:12:2014::22:10.52 -- INFO -- Starting ping to 8.8.4.4
+10:12:2014::22:10.52 -- INFO -- Finished checking 8.8.4.4
+10:12:2014::22:10.53 -- INFO -- Starting ping to 8.8.8.8
+10:12:2014::22:10.53 -- INFO -- Finished checking 8.8.8.8
+10:13:2014::00:58.43 -- INFO -- Starting ping to 192.168.1.250
+10:13:2014::00:58.43 -- INFO -- Finished checking 192.168.1.250
+10:13:2014::00:58.45 -- INFO -- Starting ping to 192.168.1.250
+10:13:2014::00:58.45 -- INFO -- Finished checking 192.168.1.250
+10:13:2014::00:59.30 -- INFO -- Starting ping to 192.168.1.250
+10:13:2014::00:59.30 -- INFO -- Finished checking 192.168.1.250
+10:13:2014::22:03.06 -- INFO -- Starting ping to 8.8.8.8
+10:13:2014::22:03.06 -- INFO -- Finished checking 8.8.8.8
+10:13:2014::22:56.22 -- INFO -- Starting ping to 8.8.8.8
+10:13:2014::22:56.22 -- ERROR -- ICMP transmit error.
+10:13:2014::22:56.22 -- INFO -- Finished checking 8.8.8.8
+10:13:2014::22:57.19 -- INFO -- Starting ping to 8.8.8.8
+10:13:2014::22:57.19 -- ERROR -- ICMP transmit error.
+10:13:2014::22:57.19 -- INFO -- Finished checking 8.8.8.8
+10:13:2014::22:58.03 -- INFO -- Starting ping to 8.8.8.8
+10:13:2014::23:00.44 -- INFO -- Starting ping to 8.8.8.8
+10:13:2014::23:00.44 -- INFO -- Finished checking 8.8.8.8
+10:13:2014::23:02.19 -- INFO -- Starting ping to 8.8.8.8
+10:13:2014::23:02.20 -- INFO -- Finished checking 8.8.8.8
+10:13:2014::23:09.57 -- INFO -- Starting ping to 10.10.10.10
+10:13:2014::23:09.58 -- INFO -- Finished checking 10.10.10.10

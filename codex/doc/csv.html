@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<head>
+	<title>Codex CSV Import</title>
+	<link rel="stylesheet" href="../css/codex.css" type="text/css">
+</head>
+
+<body style="padding: 50px">
+	<h1>Codex CSV Import</h1>
+	<p>In order to successfully import a comma-delimeated text file into Codex, it must be formatted in a specific way. The following format is this:
+	<br><br><i>[ip address],[nickname],[subnet],[vlan],[location],[notes]</i>
+	<br><br>A simgle line would look like this:
+	<br><br><i>10.1.10.1,fileserver,10.1.10.0/24,0,server room,abcd/1234</i>
+
+	<p>Each line MUST be in this format for the import to work correctly, however all fields except [ip address] may be left blank.
+
+	<br><br>More sample entries:
+	<br><br>
+	<i>
+		192.168.1.1,,,,,,<br>
+		192.168.1.2,DNS Server,192.168.1.0/24,,,,<br>
+		192.168.1.100,DHCP Server, 192.168.1.0/24,10,Offsite,this server is currently offsite for maintenance<br>
+	</i>
+
+
+	</p>
+</body>

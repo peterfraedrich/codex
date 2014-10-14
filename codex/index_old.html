@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<!--
+// CODEX
+// 
+// version: 0.1
+// version date: 09-26-2014
+// author: Peter Fraedrich
+//
+//
+-->
+
+<html ng-app="codex">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
+    <script type="text/javascript" src="./js/angular.js"></script>
+    <script src="./js/angular-ui.js" data-semver="0.4.0" data-require="angular-ui@*"></script>
+    <script type="text/javascript" src="./js/angular-modules.js"></script>
+    <script type="text/javascript" src="./js/jquery.js"></script>
+
+<body ng-controller="servList">
+    <div id="edit-overlay" ng-class="{'edit-show': !hide, 'edit-hide': hide }">
+        <div id="edit-wrapper">
+            <div id="edit-center-div">
+            <div id="edit-header">
+                <div id="edit-header-text">Edit Entry</div>
+            </div>
+                <table id="edit-table">
+                    <tr>
+                        <th class="edit-th">IP Address</th>
+                        <th class="edit-th">Hostname</th>
+                        <th class="edit-th">Subnet</th>
+                        <th class="edit-th">VLAN</th>
+                    </tr>
+                    <tr>
+                        <td class="edit-td"><input name="editipaddr" type="text" class="edit-text" ng-model="editIpaddr" placeholder="IP Address" value={{$scope.$edit.ipaddr}}></td>
+                        <td class="edit-td"><input name="edithostname" ng-model="editHostname" type="text" class="edit-text" placeholder="Hostname" value="{{$edit.hostname}}"></td>
+                        <td class="edit-td"><input name="editsubnet" ng-model="editSubnet" type="text" class="edit-text" placeholder="Subnet" value="{{$edit.subnet}"></td>
+                        <td class="edit-td"><input name="vlan" ng-model="editVlan" type="text" class="edit-text" placeholder="VLAN" value="{{$edit.vlan}}"></td>
+                    </tr>
+                    <tr class="edit-tr">
+                        <th class="edit-th">Virt/Phys</th>
+                        <th class="edit-th">Virtual Host</th>
+                        <th class="edit-th">Location</th>
+                        <th class="edit-th">Login</th>
+                    </tr>
+                     <tr class="edit-tr">
+                        <td class="edit-td"><input name="editvp" ng-model="editVp" type="radio" class="add-radio" value="physical">Physical</br>
+                                            <input name="editvp" ng-model="editVp" type="radio" class="add-radio" valie="virtual">Virtual</br></td>
+                        <td class="edit-td"><input name="editvirthost" ng-model="editVirthost" type="text" class="edit-text" placeholder="Virtual Host" value="{{$edit.virthost}}"></td>
+                        <td class="edit-td"><input name="editlocation" ng-model="editLocation" type="text" class="edit-text" placeholder="Location" value="{{$edit.location}"></td>
+                        <td class="edit-td"><input name="editlogin" ng-model="editLogin" type="text" class="edit-text" placeholder="Login" value="{{$edit.login}}"></td>
+                    </tr>
+                    <tr class="edit-tr">
+                        <th class="edit-th">Services</th>
+                        <th class="edit-th">Added by</th>
+                        <th class="edit-th">Reserved</th>
+                    </tr>
+                     <tr>
+                        <td class="edit-td"><input name="editservices" ng-model="editServices" type="text" class="edit-text" placeholder="Services" value="{{$edit.services}}"></td>
+                        <td class="edit-td"><input name="editaddedby" ng-model="editAddedby" type="text" class="edit-text" placeholder="Added By" value="{{$edit.addedby}"></td>
+                        <td class="edit-td"><center><input name="editreserved" ng-model="editreserved" type="checkbox" class="add-check">Reserved?</center></td>
+                    </tr>
+                </table>
+            <div id="edit-buttons">
+                <input type="submit" id="edit-button-save" class="edit-button-style button-class" ng-click="saveEdit()" value="Save">
+                <input type="button" id="edit-button-canel" class="edit-button-style button-class" ng-click="hide = !hide" value="Cancel"><br>
+            </div>
+            </div>
+            </div>
+            <div id="edit-bg"></div>
+        </div>
+    </div>
+    <div id="page-wrapper">
+        <table id="wrapper">
+            <td id="td-sidebar" class="td-no-border">
+                <div id="sidebar">
+                    <div id="headers">
+                        <center>CODEX</center>
+                    </div>
+                    <center>
+                    <div id="branding"><img src="./img/logo.png" id="logo"></div>
+                    <div id="refresh">
+                        <input id="refresh-btn" class="btn button-class" type="button" name="refresh" ng-model="refreshBtn" ng-click="refresh()" value="Refresh">
+                    </div>
+                    <div id="search">
+                        <input type="text" id="searchbox" class="searchbox" name="search" ng-model="search.$" placeholder="Search...">
+                    </div>
+                    <div id="filters">
+                        </center>
+                        <table id="filter-tbl">
+                            <tr>
+                                <td class="sidebar-header filter-header">Filters</td>
+                            </tr>
+                            <tr>
+                                <td>VLAN</td>
+                                <td><select class="dropdown" ng-model="search.vlan">
+                                    <option value=''></option>
+                                    <option ng-repeat="row in servers | unique:'vlan'">{{ row.vlan }}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>User</td>
+                                <td><select class="dropdown" ng-model="search.user">
+                                    <option value=''></option>
+                                    <option ng-repeat="row in servers | unique:'user'">{{ row.user }}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Type</td>
+                                <td><select class="dropdown" ng-model="search.type">
+                                    <option value=''></option>
+                                    <option ng-repeat="row in servers | unique:'type'">{{ row.vp }}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Virt Host</td>
+                                <td><select class="dropdown" ng-model="search.virthost">
+                                    <option value=''></option>
+                                    <option ng-repeat="row in servers | unique:'virthost'">{{ row.virthost }}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                             <tr>
+                                <td>Reserved</td>
+                                <td><select class="dropdown" ng-model="search.reserved">
+                                    <option value=''></option>
+                                    <option ng-repeat="row in servers | unique:'reserved'">{{ row.reserved }}</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><input type="button" value="Clear Filters" ng-click="clearfilters()" id="clear-btn" class="button-class"></td>
+                            </tr>
+                        </table>
+                   
+                    <div id="add">
+                        <form>
+                            <table id="add-tbl">
+                                <tr><td class="sidebar-header">Add A Host</td></tr>
+                                <tr><td><input name="ipaddr" ng-model="ipaddr" type="text" class="add-text" placeholder="IP Address"></td></tr>
+                                <tr><td><input name="hostname" ng-model="hostname" type="text" class="add-text" placeholder="Hostname"></tr></td>
+                                <tr><td><input name="subnet" ng-model="subnet" type="text" class="add-text" placeholder="Subnet (ex. 255.255.0.0)"></tr></td>
+                                <tr><td><input name="vlan" ng-model="vlan" type="text" class="add-text" placeholder="VLAN"></tr></td>
+                                <tr><td>Device Type
+                                        <select name="type" ng-model="type" class="dropdown" id="typedropdown">
+                                        <option value="accesspoint">Access Point</option>
+                                        <option value="firewalldevice">Firewall - Device</option>
+                                        <option value="firewallsoftware">Firewall - Software</option>
+                                        <option value="gateway">Gateway</option>
+                                        <option value="router">Router - Device</option>
+                                        <option value="router">Router - Software</option>
+                                        <option value="server">Server</option>
+                                        <option value="servervm">Server - VM</option>
+                                        <option value="servervmhost">Server - VM Host</option>
+                                        <option value="switchmanaged">Switch - Managed</option>
+                                        <option value="switchunmanaged">Switch - Unmanaged</option>
+                                        <option value="workstation">Workstation</option>
+                                        <option value="workstationvm">Workstation - VM</option>
+                                        <option value="other">Other</option>
+                                        </select></td></tr>
+                                <tr><td><input name="virthost" ng-model="virthost" type="text" class="add-text" placeholder="Virtual Host"></td></tr>
+                                <tr><td><input name="location" ng-model="location" type="text" class="add-text" placeholder="Location"></td></tr>
+                                <tr><td><input name="login" ng-model="login" type="text" class="add-text" placeholder="Login"></td></tr>
+                                <tr><td><input name="services" ng-model="services" type="text" class="add-text" placeholder="Services"></td></tr>
+                                <tr><td><input name="user" ng-model="user" type="text" class="add-text" placeholder="Added By"></td></tr>
+                                <tr><td><input name="reserved" ng-model="reserved" type="checkbox" class="add-check">Reserved?</td></tr>
+                                <tr><td><input name="addBtn" ng-model="addBtn" class="addBtn button-class" type="submit" value="Add Host" ng-click="add()"></td></tr>
+                            </table>
+                        </form>
+                    </div>
+                    
+                </div>
+
+            </td>
+
+            <td id="td-list" class="td-no-border">
+                <div id="list-bg">
+                    <div id="list">
+                        <table id="thelist">
+                            <tr>
+                                <th class="td-ipaddr">IP Address</th>
+                                <th class="td-hostname">Hostname</th>
+                                <th class="td-health">DNS Name</th>
+                                <th class="td-subnet">Subnet</th>
+                                <th class="td-vlan">VLAN</th>
+                                <th class="td-vp">Device Type</th>
+                                <th class="td-virthost">Virtual Host</th>
+                                <th class="td-location">Location</th>
+                                <th class="td-login">Login Details</th>
+                                <th class="td-svcs">Services/Apps</th>
+                                <th class="td-user">Added By</th>
+                                <th class="td-reserved">Reserved</th>
+                                <th class="td-dateadded">Last Up</th>
+                                <th class="td-lastalive">Date Added</th>
+                                <th class="td-edit">Edit</th>
+                                <th class="td-edit">Delete</th>
+                            </tr>
+                            <tr class="tablehover" ng-repeat="row in servers | orderBy: 'ipaddr' | filter:search">
+                                <td class="td-ipaddr">{{ row.ipaddr }}</td>
+                                <td class="td-hostname">{{ row.hostname }}</td>
+                                <td class="td-health health-class">{{ row.dnsname }}</td>
+                                <td class="td-subnet">{{ row.subnet }}</td>
+                                <td class="td-vlan">{{ row.vlan }}</td>
+                                <td class="td-vp">{{ row.type }}</td>
+                                <td class="td-virthost">{{ row.virthost }}</td>
+                                <td class="td-location">{{ row.location }}</td>
+                                <td class="td-login">{{ row.login }}</td>
+                                <td class="td-svcs">{{ row.services }}</td>
+                                <td class="td-user">{{ row.user }}</td>
+                                <td class="td-reserved">{{ row.reserved }}</td>
+                                <td class="td-dateadded">{{ row.lastalive }}</td>
+                                <td class="td-lastalive">{{ row.dateadded }}</td>
+                                <td class="td-edit"><input id="editbtn" class="button-class" name="editbtn" ng-model="editBtn" type="button" value="Edit" ng-click="edit(row)"></td>
+                                <td class="td-delete"><input id="deletebtn" class="button-class" name="deletemtn" type="button" value="Delete" ng-click="delete(row)"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+
+
+            </td>
+
+        </table>
+    </div>
+
+</body>
+
+</html>
