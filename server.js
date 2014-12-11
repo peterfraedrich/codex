@@ -129,7 +129,7 @@
 
 //// GET HOSTS / REFRESH
     app.get('/get', function (req, res) {
-        db.entries.find('', function(err, ipaddr) { 
+        db.entries.find({}, function(err, ipaddr) { 
         if( err || !ipaddr) {
           res.writeHead(200, {'Content-type': 'application/text'});
           res.end()
