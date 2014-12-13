@@ -25,6 +25,9 @@
     var db = require('mongojs').connect(databaseUrl, collections);
         var app = express();
   
+    var httpPort = 80;
+    var apiPort = 666;
+
 // ================ CONFIG ========================= //
    
     var allowCrossDomain = function(req, res, next) {
@@ -145,7 +148,7 @@
             str = str.trim();
             str = str.substring(0,str.length-1);
             str = str + ']';
-            res.end( str);
+            res.end(str);
             }
         });
     });
@@ -180,10 +183,10 @@
               },
                function(err, saved) {
                   if( err || !saved ) { 
-                    res.end( "server not saved"); 
+                    res.end("server not saved"); 
                     log("202","Entry was not saved, there was an error.");
                   } else { 
-                    res.end( "server saved"); 
+                    res.end("server saved"); 
                   };
                });
             } else {
@@ -208,10 +211,10 @@
               },
                function(err, saved) {
                   if( err || !saved ) { 
-                    res.end( "server not saved"); 
+                    res.end("server not saved"); 
                     log("203","Entry was not saved, there was an error.");
                   } else { 
-                    res.end( "server saved"); 
+                    res.end("server saved"); 
                   };
                });
             };
@@ -238,10 +241,10 @@
               },
                function(err, saved) {
                   if( err || !saved ) { 
-                    res.end( "server not saved"); 
+                    res.end("server not saved"); 
                     log("204","Entry was not saved, there was an error.");
                   } else { 
-                    res.end( "server saved"); 
+                    res.end("server saved"); 
                   };
                });
         };
@@ -255,10 +258,10 @@
            db.entries.update({ipaddr:query}, {$set : {nickname: jsonData.nickname, ipaddr: jsonData.ipaddr, subnet: jsonData.subnet, vlan: jsonData.vlan, type: jsonData.type, location: jsonData.location, notes: jsonData.notes, reserved: jsonData.reserved, ipA: jsonData.ipA, ipB: jsonData.ipB, ipC: jsonData.ipC, ipD: jsonData.ipD} },
                 function(err, saved) {
                   if( err || !saved ) { 
-                    res.end( "server not saved"); 
+                    res.end("server not saved"); 
                     log("302","Entry was not saved, there was an error.");
                   } else { 
-                    res.end( "server saved"); 
+                    res.end("server saved"); 
                   };
                });
 
@@ -375,9 +378,9 @@
 // ============= LISTEN ==================== //
 
 connect ()
-  .use(connect.static(__dirname)).listen(80);
+  .use(connect.static(__dirname)).listen(httpPort);
 console.log('Server listening on port 80');
-app.listen(666);
+app.listen(apiPort);
 console.log('API listening on port 666');
 log("001","The sever started up successfully.");
 

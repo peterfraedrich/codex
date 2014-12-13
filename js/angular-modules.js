@@ -27,6 +27,24 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
     $scope.codeStatus = "";
 
     // === logging function === //
+
+    $scope.strEncode = function(string) {
+
+        var str = string.replace(/\n/g,'%n');
+        str = str.replace(/\\/g,'%s');
+        str = str.replace(/"/g,"%quot");
+        str = str.replace(/&/g,"%amp");
+        return str;
+    }
+
+    $scope.strDecode = function(string) {
+
+        var str = string.replace(/%n/g,'\n');
+        str = str.replace(/%s/g,'\\');
+        str = str.replace(/%quot/g,'"');
+        str = str.replace(/%amp/g,"&");
+        return str
+    }
     
     $scope.logger = function (code, message) {
 
@@ -58,7 +76,7 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
 
         var url = rooturl+'/get';
         $http.get(url).then(function(res) {
-            $scope.entries = res.data;
+            $scope.entries = res.data;         
         });
     };
      
@@ -99,7 +117,7 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
         $scope.editDnsname = row.dnsname;
         $scope.editSubnet = row.subnet;
         $scope.editLocation = row.location;
-        $scope.editNotes = row.notes;
+        $scope.editNotes = $scope.strDecode(row.notes);
         $scope.editReserved = row.reserved;
         $scope.editType = row.type;
         $scope.editVlan = row.vlan;
@@ -177,7 +195,7 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
         $scope.ipD = octets[3];
 
         notes = $scope.editNotes;
-        $scope.editNotes = notes.replace('\n',' ');
+        $scope.editNotes = $scope.strEncode(notes);
 
         var formData = {
             ipaddr: $scope.editIpaddr,
@@ -290,7 +308,7 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
         };
         
         notes = $scope.notes;
-        $scope.notes = notes.replace('\n',' ');
+        $scope.notes = $scope.strEncode(notes);
 
         var iplookup = 'mydata='+JSON.stringify(ipData);
 
