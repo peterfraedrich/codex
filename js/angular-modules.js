@@ -111,17 +111,17 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
 
         
         $scope.hide = false;
-        $scope.editIpaddr = row.ipaddr;
-        $scope.editNickname = row.nickname;
-        $scope.editHeader = row.nickname;
-        $scope.editDnsname = row.dnsname;
-        $scope.editSubnet = row.subnet;
-        $scope.editLocation = row.location;
+        $scope.editIpaddr = $scope.strDecode(row.ipaddr);
+        $scope.editNickname = $scope.strDecode(row.nickname);
+        $scope.editHeader = $scope.strDecode(row.nickname);
+        $scope.editDnsname = $scope.strDecode(row.dnsname);
+        $scope.editSubnet = $scope.strDecode(row.subnet);
+        $scope.editLocation = $scope.strDecode(row.location);
         $scope.editNotes = $scope.strDecode(row.notes);
         $scope.editReserved = row.reserved;
         $scope.editType = row.type;
-        $scope.editVlan = row.vlan;
-        oip = row.ipaddr;
+        $scope.editVlan = $scope.strDecode(row.vlan);
+        oip = $scope.strDecode(row.ipaddr);
         $scope.editHealth = row.health;
 
 
@@ -187,6 +187,159 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
 
     $scope.saveEdit = function () {
 
+        //// DATA VALIDATION
+        // check IP address to make sure there is one
+        if ($scope.editIpaddr == null) {
+            alert("ERROR: IP address cannot be blank.")
+        } else {
+            $scope.editIpaddr = $scope.strEncode($scope.editIpaddr);
+            var ipData = { ipaddr: $scope.editIpaddr, };
+            // split IP into octets for sorting
+            var octets = ($scope.editIpaddr).split(".");
+            $scope.ipA = parseFloat(octets[0]);
+            $scope.ipB = parseFloat(octets[1]);
+            $scope.ipC = parseFloat(octets[2]);
+            $scope.ipD = parseFloat(octets[3]);
+        };
+        
+        /// check to see if fields are null & fix + special character encoding
+        if ($scope.editNickname == null) {
+            $scope.editNickname = ''
+        } else {
+            $scope.editNickname = $scope.strEncode($scope.editNickname);
+        };
+        if ($scope.editReserved == null) {
+            $scope.editReserved = 'clear.png'
+        };
+        if ($scope.editType == null) {
+            $scope.editType = ''
+        };
+        if ($scope.editSubnet == null) {
+            $scope.editSubnet = ''
+        } else {
+            $scope.editSubnet = $scope.strEncode($scope.editSubnet);
+        };
+        if ($scope.editVlan == null) {
+            $scope.editVlan = ''
+        } else {
+            $scope.editVlan = $scope.strEncode($scope.editVlan);
+        };
+        if ($scope.editLocation == null) {
+            $scope.editLocation = ''
+        } else {
+            $scope.editLocation = $scope.strEncode($scope.editLocation);
+        };
+        if ($scope.editNotes == null) {
+            $scope.editNotes = ''
+        } else {
+            $scope.editNotes = $scope.strEncode($scope.editNotes);
+        };
+
+        if ($scope.editIpaddr != oip) {
+
+                var iplookup = 'mydata='+JSON.stringify(ipData);
+
+                $http({
+                    method: 'POST',
+                    url: rooturl+'/lookup',
+                    data: iplookup,
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    cache: $templateCache,
+                }).
+                then( function(res) {
+
+                    /// If IP address already in DB, return error and prompt user
+                    if (res.data[0].response==="1") {
+                        alert("IP address exists!\nPlease choose another.");
+                    } else if ($scope.editIpaddr.length < 6) {
+                        alert("IP address is required!");
+
+                    } else {
+                    /// if everything is OK, write JSON obejct and submit to Node API for DB 
+
+                    var formData = {
+                        ipaddr: $scope.editIpaddr,
+                        nickname: $scope.editNickname,
+                        subnet: $scope.editSubnet,
+                        vlan: $scope.editVlan,
+                        type: $scope.editType,
+                        location: $scope.editLocation,
+                        notes: $scope.editNotes,
+                        reserved: $scope.editReserved,
+                        oip: oip,
+                        ipA: $scope.ipA,
+                        ipB: $scope.ipB,
+                        ipC: $scope.ipC,
+                        ipD: $scope.ipD 
+                        };
+
+                    var jdata = 'mydata=' + JSON.stringify(formData);
+
+                    $http({
+                        method: 'POST',
+                        url: rooturl+'/save',
+                        data: jdata,
+                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                        cache: $templateCache,
+                    }).
+                    success(function(response) {
+                        $scope.logger('100','HTTP success');
+                    }).
+                    error(function(response){
+                        $scope.codeStatus = response || "Request failed";
+                        $scope.logger('101','HTTP error - fn. add');
+                    });
+
+                    $scope.edithide();
+                    $timeout(function() {$scope.list()}, 500)
+                            
+                    };
+
+                });
+
+        } else {
+
+            var formData = {
+                    ipaddr: $scope.editIpaddr,
+                    nickname: $scope.editNickname,
+                    subnet: $scope.editSubnet,
+                    vlan: $scope.editVlan,
+                    type: $scope.editType,
+                    location: $scope.editLocation,
+                    notes: $scope.editNotes,
+                    reserved: $scope.editReserved,
+                    oip: oip,
+                    ipA: $scope.ipA,
+                    ipB: $scope.ipB,
+                    ipC: $scope.ipC,
+                    ipD: $scope.ipD 
+                    };
+
+                var jdata = 'mydata=' + JSON.stringify(formData);
+
+                $http({
+                    method: 'POST',
+                    url: rooturl+'/save',
+                    data: jdata,
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    cache: $templateCache,
+                }).
+                success(function(response) {
+                    $scope.logger('100','HTTP success');
+                }).
+                error(function(response){
+                    $scope.codeStatus = response || "Request failed";
+                    $scope.logger('101','HTTP error - fn. add');
+                });
+
+                $scope.edithide();
+                $timeout(function() {$scope.list()}, 500)
+                        
+        };
+    };
+
+
+        /*
        // split IP into octets for sorting
         var octets = ($scope.editIpaddr).split(".");
         $scope.ipA = octets[0];
@@ -234,8 +387,7 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
 
         $scope.edithide();
         $timeout(function() {$scope.list()}, 500)
-
-    };
+*/
 
     $scope.refresh = function () {
         $scope.list();
@@ -273,20 +425,26 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
 
     $scope.add = function () {
 
-        var ipData = {
-            ipaddr: $scope.ipaddr,
+        //// DATA VALIDATION
+        // check IP address to make sure there is one
+        if ($scope.ipaddr == null) {
+            alert("ERROR: IP address cannot be blank.")
+        } else {
+            $scope.ipaddr = $scope.strEncode($scope.ipaddr);
+            var ipData = { ipaddr: $scope.ipaddr, };
+            // split IP into octets for sorting
+            var octets = ($scope.ipaddr).split(".");
+            $scope.ipA = parseFloat(octets[0]);
+            $scope.ipB = parseFloat(octets[1]);
+            $scope.ipC = parseFloat(octets[2]);
+            $scope.ipD = parseFloat(octets[3]);
         };
-
-        // split IP into octets for sorting
-        var octets = ($scope.ipaddr).split(".");
-        $scope.ipA = parseFloat(octets[0]);
-        $scope.ipB = parseFloat(octets[1]);
-        $scope.ipC = parseFloat(octets[2]);
-        $scope.ipD = parseFloat(octets[3]);
-
-        /// check to see if fields are null & fix 
+        
+        /// check to see if fields are null & fix + special character encoding
         if ($scope.nickname == null) {
             $scope.nickname = ''
+        } else {
+            $scope.nickname = $scope.strEncode($scope.nickname);
         };
         if ($scope.reserved == null) {
             $scope.reserved = 'clear.png'
@@ -296,19 +454,24 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
         };
         if ($scope.subnet == null) {
             $scope.subnet = ''
+        } else {
+            $scope.subnet = $scope.strEncode($scope.subnet);
         };
         if ($scope.vlan == null) {
             $scope.vlan = ''
+        } else {
+            $scope.vlan = $scope.strEncode($scope.vlan);
         };
         if ($scope.location == null) {
             $scope.location = ''
+        } else {
+            $scope.location = $scope.strEncode($scope.location);
         };
         if ($scope.notes == null) {
             $scope.notes = ''
+        } else {
+            $scope.notes = $scope.strEncode($scope.notes);
         };
-        
-        notes = $scope.notes;
-        $scope.notes = $scope.strEncode(notes);
 
         var iplookup = 'mydata='+JSON.stringify(ipData);
 
@@ -321,14 +484,14 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
         }).
         then( function(res) {
 
+            /// If IP address already in DB, return error and prompt user
             if (res.data[0].response==="1") {
-
                 alert("IP address exists!\nPlease choose another.");
             } else if ($scope.ipaddr.length < 6) {
                 alert("IP address is required!");
 
             }
-
+            /// if everything is OK, write JSON obejct and submit to Node API for DB 
             else {
 
                 var formData = {
@@ -385,6 +548,8 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
     };
 
     $scope.rescanAll = function () {
+
+        alert('Re-scanning all entries.\nThis could take some time depending on the number of entries.')
         $http({
             method: 'POST',
             url: rooturl+'/rescanall',
@@ -394,11 +559,14 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
         }).
         success(function(response) {
             $scope.logger('100','HTTP success');
+            alert("Entry scanning finished.");
         }).
         error(function(response){
             $scope.codeStatus = response || "Request failed";
             $scope.logger('101','HTTP error - fn. rescanAll');
+            alert("There was a problem. HTTP ERR 101\nIf this issue persists please contact support.");
         });
+        $scope.adminhide();
     };
 
     $scope.rescanOne = function (row) {
@@ -424,26 +592,35 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
     };
 
     $scope.drop = function () {
-        $http({
-            method: 'POST',
-            url: rooturl+'/drop',
-            data: "drop",
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            cache: $templateCache,
-        }).
-        success(function(response) {
-            $scope.logger('100','HTTP success');
-        }).
-        error(function(response){
-            $scope.codeStatus = response || "Request failed";
-            $scope.logger('101','HTTP error - fn. drop');
-        });
-        $timeout(function() {$scope.list()}, 1001);
-        $scope.adminhide();
+        
+        var c = confirm("Are you sure you want to delete the entire codex?\n -- THIS CANNOT BE UNDONE --");
+        if ( c == true ) {
+
+            $http({
+                method: 'POST',
+                url: rooturl+'/drop',
+                data: "drop",
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                cache: $templateCache,
+            }).
+            success(function(response) {
+                $scope.logger('100','HTTP success');
+            }).
+            error(function(response){
+                $scope.codeStatus = response || "Request failed";
+                $scope.logger('101','HTTP error - fn. drop');
+            });
+            $timeout(function() {$scope.list()}, 1001);
+            $scope.adminhide();
+        } else {
+            alert("Aborted!")
+            $scope.adminhide()
+        };
     };
 
     $scope.scanSubnet = function () {
 
+        alert("Starting subnet scan.\nThis could take some time.")
         $http({
             method: 'POST',
             url: rooturl+'/scan',
@@ -454,11 +631,13 @@ app.controller('codexList', ['$scope', '$timeout', '$http', '$templateCache', fu
         success(function(response) {
             console.log(response);
             $scope.logger('100','HTTP success');
+            alert("Subnet scan completed successfully.");
         }).
         error(function(response){
             $scope.codeStatus = response || "Request failed";
             console.log(response);
             $scope.logger('101','HTTP error - fn. scanSubnet');
+            alert("There was an error. HTTP ERR 101\nIf this problem persists please contact support.");
         });
         $scope.adminhide();
     };
@@ -487,10 +666,6 @@ app.filter('unique', function() {
     };
 
 });
-
-
-
-
 
 // ============= ON LOAD FUNCTION CALLS ======//
 

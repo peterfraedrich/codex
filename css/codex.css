@@ -9,7 +9,10 @@ body {
 	min-width: 1150px;
 	overflow: hidden;
 	font-family: Helvetica, Arial, sans-serif;
-	background-color: #f8f8f8;
+	background-color: rgba(250,250,250,0.8);
+	/*background-color: #f8f8f8;*/
+	background-image: url('../img/bg.png');
+	background-position: center top;
 }
 
 .hidden {
@@ -92,7 +95,7 @@ body {
 
 #search {
 	display: inline-block;
-	width: 500px;
+	width: 480px;
 	height: 48px;
 	font-size: 30px;
 	vertical-align: top;
@@ -112,6 +115,7 @@ body {
 	vertical-align: top;
 	margin-top: 10px;
 	line-height: 50px;
+	transition: background-color 0.2s;
 }
 #refresh:hover {
 	background-color: #CCC;
@@ -150,6 +154,7 @@ body {
 	text-align: center;
 	font-weight: bolder;
 	cursor: pointer;
+	transition: background-color 0.2s;
 }
 #div-add:hover {
 	background-color: #666;
@@ -160,6 +165,7 @@ body {
 	width: 30px;
 	background-color: transparent;
 	opacity: 0.3;
+	transition: background-color 0.2s;
 }
 #editBtn:hover {
 	opacity: 1.0;
@@ -175,6 +181,7 @@ body {
 	width: 30px;
 	opacity: 0.3;
 	background-color: transparent;
+	transition: background-color 0.2s;
 }
 #deleteBtn:hover {
 	opacity: 1.0;
@@ -189,6 +196,7 @@ body {
 	width: 30px;
 	background-color: transparent;
 	opacity: 0.3;
+	transition: background-color 0.2s;
 }
 #rescanBtn:hover {
 	opacity: 1.0;
@@ -214,10 +222,11 @@ td {
 tr { }
 
 .tablehover {
-	background-color: #FFF;
+	background-color: rgba(255,255,255,0.0);
+	transition: background-color 0.2s;
 }
 .tablehover:hover {
-	background-color: #F8F8F8;
+	background-color: rgba(255,255,255,0.5);
 }
 
 #table-wrapper {
@@ -228,13 +237,13 @@ tr { }
 	margin-left: 50%;
 	left: -575px;
 	overflow-y: scroll;
-	background-color: #FFF;
+	background-color: rgba(255,255,255,0.9);
 	box-shadow: 0px 0px 100px 0px rgba(0,0,0,0.1);
 
 }
 
 .table-item {
-	border-bottom: 1px solid #EEE;
+	border-bottom: 1px solid #DDD;
 }
 
 #thelist {
@@ -484,6 +493,7 @@ tr { }
 	text-align: center;
 	line-height: 50px;
 	background-color: rgba(255,255,255,0);
+	transition: background-color 0.2s;
 }
 #div-admin:hover {
 	background-color: rgba(255,255,255,0.1);

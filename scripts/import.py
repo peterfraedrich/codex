@@ -45,18 +45,18 @@ class bcolors:
 if len(sys.argv) > 1 :
     if sys.argv[1] == "-h" :
         print "Import supports the following format for imported files:"
-        print "  [ipaddress],[hostname],[subnet mask],[VLAN],[login]"
-        print "  ex.: 10.10.0.1,Test Computer,255.255.0.0,10,username/password"
+        print "  [IP Address],[Nickname],[Subnet],[VLAN ID],[Location],[Reserved],[Notes]"
+        print "  ex.: 192.168.1.1,router,192.168.0.1/24,10,server room,no,admin/abcd1234"
         sys.exit() 
     elif sys.argv[1] == "help" :
         print "Import supports the following format for imported files:"
-        print "  [ipaddress],[hostname],[subnet mask],[VLAN],[login]"
-        print "  ex.: 10.10.0.1,Test Computer,255.255.0.0,10,username/password"
+        print "  [IP Address],[Nickname],[Subnet],[VLAN ID],[Location],[Reserved],[Notes]"
+        print "  ex.: 192.168.1.1,router,192.168.0.1/24,10,server room,no,admin/abcd1234"
         sys.exit()
     else:
         print "Import supports the following format for imported files:"
-        print "  [ipaddress],[hostname],[subnet mask],[VLAN],[login]"
-        print "  ex.: 10.10.0.1,Test Computer,255.255.0.0,10,username/password"
+        print "  [IP Address],[Nickname],[Subnet],[VLAN ID],[Location],[Reserved],[Notes]"
+        print "  ex.: 192.168.1.1,router,192.168.0.1/24,10,server room,no,admin/abcd1234"
         sys.exit() 
 
 print ""
@@ -70,17 +70,14 @@ def import_csv(row):
     global skipped
     global existed
     split = row.split(delineator)
-    if len(split) > 5:
+    if len(split) > 4:
         ipaddr = split[0]
         nickname = split[1]
         subnet = split[2]
         vlan = split[3]
         location = split[4]
-        if split[5] == "True":
-            reserved = 'reserved.png'
-        elif split[5] == "true":
-            reserved = 'reserved.png'
-        elif split[5] == "reserved":
+        notes = split[6]
+        if split[5].lower() == "true" or split[5].lower() == "yes" or split[5].lower() == 'reserved':
             reserved = 'reserved.png'
         else:
             reserved = 'clear.png'
@@ -103,10 +100,10 @@ def import_csv(row):
             "ipaddr":ipaddr, 
             "nickname":nickname, 
             "dnsname": dns,
-            "health": health,
             "subnet":subnet, 
             "vlan":vlan, 
-            "location":location,  
+            "location":location,
+            "notes":notes,  
             "ipA":octet[0], 
             "ipB":octet[1], 
             "ipC":octet[2], 
@@ -141,7 +138,7 @@ print bcolors.red +  str(skipped) + " entries skipped because they did not meet 
 
 
 # write to log @ start
-log("101","Import completed. Added " + str(entries) + "entries to the codex. " + str(skipped) + " skipped.", logpath)
+log("101","Import completed. Added " + str(entries) + " entries to the codex. " + str(skipped) + " skipped.", logpath)
 
 
 sys.exit()

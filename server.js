@@ -155,7 +155,7 @@
 
 //// ADD NEW HOST
     app.post('/add', function (req, res) {
-      console.log(req.body.mydata);
+      //console.log(req.body.mydata);
       var jsonData = JSON.parse(req.body.mydata);
       var ip = jsonData.ipaddr;
       // do a DNS lookup on new IP's
@@ -192,7 +192,7 @@
             } else {
               // if somethings is resolved, add it to jsonData and save to DB
               jsonData.dnsname = resolve[0].toString();
-              console.log("DNS name found for " + jsonData.ipaddr + ", resolved to " + jsonData.dnsname);
+              //console.log("DNS name found for " + jsonData.ipaddr + ", resolved to " + jsonData.dnsname);
               db.entries.save({dnsname: jsonData.dnsname, 
                dnsname: jsonData.dnsname,
                 nickname: jsonData.nickname,
@@ -325,7 +325,7 @@
           log('601','node_server could not execute python script.');
           res.send("0");
         } else {
-          console.log('Running python script');
+          //console.log('Running python script');
           res.send("1");
         };
       });
@@ -340,7 +340,7 @@
           log('701','node_server could not execute the python script.');
           res.send("0");
         } else {
-          console.log('Running python script.');
+          //console.log('Running python script.');
           res.send("1");
         };
       });
@@ -355,7 +355,7 @@
           log('801','node_server could not execute the python script.');
           res.send("0");
         } else {
-          console.log('Running python script.');
+          //console.log('Running python script.');
           res.send("1");
         };
       });

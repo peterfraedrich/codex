@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# db_crawler.py
+# scanall.py
 # this script crawls the DB to make sure the hosts are up.
 # ========================================================== #
 # COLDBLUE
@@ -34,14 +34,14 @@ def pinger(ip, health):
 	#print ip, response
 	if res == 0:
 		try:
-            dns = rdns(ip)[0]
-        except:
-            dns = ''
-        reserved = db.find_one({'ipaddr':ip})
-        if reserved['reserved'] == 'reserved.png':
-        	resupdate = 'clear.png'
-        else:
-        	resupdate = 'reserved.png'
+			dns = rdns(ip)[0]
+		except:
+			dns = ''
+		reserved = db.find_one({'ipaddr':ip})
+		if reserved['reserved'] == 'reserved.png':
+			resupdate = 'clear.png'
+		else:
+			resupdate = 'reserved.png'
 		db.update( {"ipaddr": ip}, {"$set" : {"health":"green.png","dnsname":dns,"reserved":resupdate} } )
 	else:
 		db.update( {"ipaddr": ip}, {"$set" : {"health":"red.png"} } )

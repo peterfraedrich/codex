@@ -3,7 +3,7 @@
 <html ng-app="codex">
 
 <head>
-	<title>CODEX v0.1 - COLDBLUE</title>
+	<title>Codex (Alpha) - ColdBlue USA</title>
 	<meta charset="UTF-8">
 	<link rel="stylesheet" href="./css/codex.css" type="text/css">
     <script type="text/javascript" src="./js/angular.js"></script>
@@ -19,7 +19,7 @@
     		<div id="div-logo">
     			<img src="./img/logo.png" id="img-logo">
     		</div>
-    		<input type="text" id="search" class="flat" placeholder="Search..." ng-model="search.$">
+    		<input type="text" id="search" class="flat" placeholder="Search..." ng-model="search.$" autofocus>
     		<div name="refresh" id="refresh" class="flat icon" ng-click="list()" title="Refesh entries"><img src="./img/refresh.png" class="icon"></div>
     		<div id="div-add" ng-click="addhide()" title="Add new entry">
     			Add
@@ -66,10 +66,10 @@
 
   <div id="add-window" ng-class="{'add-show': !addopen, 'add-hide': addopen }">
         <div id="add-wrapper">
-            <h1>Add Codex entry</h1><img id="add-cancel" ng-click="addcancel()" src="./img/cancel.png">
+            <h1>Add entry</h1><img id="add-cancel" ng-click="addcancel()" src="./img/cancel.png">
                 <table id="add-tbl">
                     <tr >
-                        <td class="add-td add-col-l">IP Address</td><td class="add-td add-col-r"><input name="ipaddr" ng-model="ipaddr" type="text" class="flat add-box" placeholder="ex. 127.0.0.1"></td>
+                        <td class="add-td add-col-l">IP Address</td><td class="add-td add-col-r"><input name="ipaddr" ng-model="ipaddr" type="text" class="flat add-box" placeholder="ex. 127.0.0.1" autofocus></td>
                     </tr>
                     <tr >
                         <td></td><td><input type="checkbox" ng-model="reserved" class="flat" id="addreserved" ng-true-value="reserved.png" ng-false-value="clear.png" ><div class="addcheckbox-text">Reserved</div></td>
@@ -123,10 +123,10 @@
 
     <div id="edit-popup" ng-class="{'edit-show' : !hide, 'edit-hide': hide }">
         <div id="edit-wrapper">
-            <h1>Edit Codex entry</h1><img id="add-cancel" ng-click="edithide()" src="./img/cancel.png">
+            <h1>Edit Entry</h1><img id="add-cancel" ng-click="edithide()" src="./img/cancel.png">
             <table id="edit-table">
                 <tr >
-                    <td class="add-td add-col-l">IP Address</td><td class="add-td add-col-r"><input name="editipaddr" ng-model="editIpaddr" type="text" class="flat add-box" value="{{$scope.$edit.ipaddr}}"></td>
+                    <td class="add-td add-col-l">IP Address</td><td class="add-td add-col-r"><input name="editipaddr" ng-model="editIpaddr" type="text" class="flat add-box" value="{{$scope.$edit.ipaddr}}" autofocus></td>
                 </tr>
                 <tr >
                     <td></td><td><input type="checkbox" ng-model="editReserved" class="flat" id="editReserved" ng-true-value="reserved.png" ng-false-value="clear.png"><div class="addcheckbox-text" >Reserved</div></td>
