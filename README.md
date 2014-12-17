@@ -7,4 +7,5 @@ Codex gives you the ability to find any host quickly with real-time search of an
 Based on the ultra-stable Node.JS web server, an AngularJS front-end, a no-SQL/JSON MongoDB database, and Python 2.7 keeping things neat and running behind the scenes, Codex is a lightweight metadata repository that can keep you on top of your topology. For advanced deployments, Codex can be broken into two main parts: the app server and the database server, allowing for database load-balancing, streamlined cloud deployment, and any other configuration to suit your needs.
 <br><br>
 Codex is designed to be run on CentOS 6.5 (and probably other RHEL-based distros like RHEL, Fedora, and Scientific Linux, we just haven't tested those yet) and is available as a virutal machine in your flavor of choice or as a Docker container (you could run it on a physical server, but why waste the resources?). 
-
+<br><br>
+Go to <a href="http://coldblue-usa.com" target="_blank">ColdBlue-USA</a> for pricing.
